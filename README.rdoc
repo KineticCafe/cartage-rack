@@ -1,0 +1,68 @@
+= cartage-rack by Kinetic Cafe
+
+code :: https://github.com/KineticCafe/cartage-rack/
+issues :: https://github.com/KineticCafe/cartage-rack/issues
+continuous integration :: {<img src="https://travis-ci.org/KineticCafe/cartage-rack.png" />}[https://travis-ci.org/KineticCafe/cartage-rack]
+
+== Description
+
+cartage-rack is a plug-in for {cartage}[https://github.com/KineticCafe/cartage]
+to provide a Rack application.
+
+Cartage provides a repeatable means to create a package for a Rails application
+that can be used in deployment with a configuration tool like Ansible, Chef,
+Puppet, or Salt. The package is created with its dependencies bundled in
++vendor/bundle+, so it can be deployed in environments with strict access
+control rules and without requiring development tool access.
+
+== Synopsis
+
+Cartage::Rack provides a Rack application generator to read and return the
++release_hashref+ from an endpoint to verify that the server was deployed. This
+endpoint supports both JSON and plaintext output. To add this to a Rails
+application, simply mount it in +config/routes.rb+:
+
+    require 'cartage/rack'
+
+    Rails.application.routes.draw do
+      get '/release' => Cartage::Rack.mount(Rails.root)
+    end
+
+Or map it in a normal Rack application in +config.ru+:
+
+    require 'cartage/rack'
+    map('/release') do
+      run Cartage::Rack.mount(Dir.pwd)
+    end
+
+It can then be queried easily:
+
+    % rails start
+    % curl localhost:3000/release
+    development: (git) main
+    % curl localhost:3000/release.json
+    { "env" : "development", "release_hashref" : "(git) main" }
+
+== Install
+
+Add cartage-rack to your Gemfile:
+
+    gem 'cartage-rack', '~> 1.0'
+
+Or manually install:
+
+  % gem install cartage-rack
+
+== cartage-rack Semantic Versioning
+
+cartage-rack uses a {Semantic Versioning}[http://semver.org/] scheme with one
+change:
+
+* When PATCH is zero (+0+), it will be omitted from version references.
+
+cartage-rack will generally track cartage for major versions to ensure plugin API
+compatibility.
+
+:include: Contributing.rdoc
+
+:include: Licence.rdoc
