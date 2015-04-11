@@ -1,6 +1,7 @@
 .autotest
 .gemtest
 .minitest.rb
+.travis.yml
 Contributing.rdoc
 Gemfile
 History.rdoc
@@ -9,3 +10,5 @@ Manifest.txt
 README.rdoc
 Rakefile
 lib/cartage/rack.rb
+test/minitest_config.rb
+test/test_cartage_rack.rb

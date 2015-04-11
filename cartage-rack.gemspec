@@ -1,22 +1,22 @@
 # -*- encoding: utf-8 -*-
-# stub: cartage-rack 1.0 ruby lib
+# stub: cartage-rack 1.1 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "cartage-rack"
-  s.version = "1.0"
+  s.version = "1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Austin Ziegler"]
-  s.date = "2015-03-22"
+  s.date = "2015-04-11"
   s.description = "cartage-rack is a plug-in for {cartage}[https://github.com/KineticCafe/cartage]\nto provide a Rack application.\n\nCartage provides a repeatable means to create a package for a Rails application\nthat can be used in deployment with a configuration tool like Ansible, Chef,\nPuppet, or Salt. The package is created with its dependencies bundled in\n+vendor/bundle+, so it can be deployed in environments with strict access\ncontrol rules and without requiring development tool access."
   s.email = ["aziegler@kineticcafe.com"]
   s.extra_rdoc_files = ["Contributing.rdoc", "History.rdoc", "Licence.rdoc", "Manifest.txt", "README.rdoc", "Contributing.rdoc", "History.rdoc", "Licence.rdoc", "README.rdoc"]
-  s.files = [".autotest", ".gemtest", ".minitest.rb", "Contributing.rdoc", "Gemfile", "History.rdoc", "Licence.rdoc", "Manifest.txt", "README.rdoc", "Rakefile", "lib/cartage/rack.rb"]
+  s.files = [".autotest", ".gemtest", ".minitest.rb", ".travis.yml", "Contributing.rdoc", "Gemfile", "History.rdoc", "Licence.rdoc", "Manifest.txt", "README.rdoc", "Rakefile", "lib/cartage/rack.rb", "test/minitest_config.rb", "test/test_cartage_rack.rb"]
   s.homepage = "https://github.com/KineticCafe/cartage-rack/"
   s.licenses = ["MIT"]
   s.rdoc_options = ["--main", "README.rdoc"]
-  s.rubygems_version = "2.2.2"
+  s.rubygems_version = "2.4.5"
   s.summary = "cartage-rack is a plug-in for {cartage}[https://github.com/KineticCafe/cartage] to provide a Rack application"
 
   if s.respond_to? :specification_version then
@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<hoe-doofus>, ["~> 1.0"])
       s.add_development_dependency(%q<hoe-gemspec2>, ["~> 1.1"])
       s.add_development_dependency(%q<hoe-git>, ["~> 1.5"])
+      s.add_development_dependency(%q<hoe-travis>, ["~> 1.2"])
       s.add_development_dependency(%q<minitest-autotest>, ["~> 1.0"])
       s.add_development_dependency(%q<minitest-bisect>, ["~> 1.2"])
       s.add_development_dependency(%q<minitest-focus>, ["~> 1.1"])
@@ -45,6 +46,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<hoe-doofus>, ["~> 1.0"])
       s.add_dependency(%q<hoe-gemspec2>, ["~> 1.1"])
       s.add_dependency(%q<hoe-git>, ["~> 1.5"])
+      s.add_dependency(%q<hoe-travis>, ["~> 1.2"])
       s.add_dependency(%q<minitest-autotest>, ["~> 1.0"])
       s.add_dependency(%q<minitest-bisect>, ["~> 1.2"])
       s.add_dependency(%q<minitest-focus>, ["~> 1.1"])
@@ -61,6 +63,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<hoe-doofus>, ["~> 1.0"])
     s.add_dependency(%q<hoe-gemspec2>, ["~> 1.1"])
     s.add_dependency(%q<hoe-git>, ["~> 1.5"])
+    s.add_dependency(%q<hoe-travis>, ["~> 1.2"])
     s.add_dependency(%q<minitest-autotest>, ["~> 1.0"])
     s.add_dependency(%q<minitest-bisect>, ["~> 1.2"])
     s.add_dependency(%q<minitest-focus>, ["~> 1.1"])

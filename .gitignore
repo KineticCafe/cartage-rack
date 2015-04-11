@@ -1,4 +1,5 @@
 Gemfile.lock
+.byebug_hist
 doc/
 coverage/
 pkg/

@@ -40,14 +40,30 @@ It can then be queried easily:
     % rails start
     % curl localhost:3000/release
     development: (git) main
-    % curl localhost:3000/release.json
-    { "env" : "development", "release_hashref" : "(git) main" }
+    % curl localhost:3000/release.json | jshon
+    {
+      "env" : "development",
+      "release_hashref" : "(git) main"
+    }
+
+If there is a +release_hashref+ file, the value returned will be from this
+file. There are two versions of +release_hashref+ files supported; the original
+format (Cartage 1.0 and 1.1) has one line (just the hashref of the release).
+The new format has two lines, the hashref of the release and the timestamp of
+the release.
+
+    % curl localhost:3000/release.json | jshon
+    {
+      "env" : "production",
+      "release_hashref" : "134458c3e3c02dd7c1cac8d5d41d85ce1e4decab"
+      "timestamp" : "20150411001143"
+    }
 
 == Install
 
 Add cartage-rack to your Gemfile:
 
-    gem 'cartage-rack', '~> 1.0'
+    gem 'cartage-rack', '~> 1.1'
 
 Or manually install:
 
