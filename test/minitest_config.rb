@@ -9,6 +9,7 @@ require 'minitest/moar'
 require 'minitest/bisect'
 
 require 'cartage/rack'
+require 'cartage/rack_changelog'
 
 module Minitest::ENVStub
   def stub_dir_pwd value, *block_args, &block
