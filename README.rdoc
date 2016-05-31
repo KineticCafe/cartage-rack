@@ -7,7 +7,7 @@ continuous integration :: {<img src="https://travis-ci.org/KineticCafe/cartage-r
 == Description
 
 cartage-rack is a plug-in for {cartage}[https://github.com/KineticCafe/cartage]
-to provide a Rack application.
+to provide a Rack application that reports on release metadata.
 
 Cartage provides a repeatable means to create a package for a Rails application
 that can be used in deployment with a configuration tool like Ansible, Chef,
@@ -17,57 +17,122 @@ control rules and without requiring development tool access.
 
 == Synopsis
 
-Cartage::Rack provides a Rack application generator to read and return the
-+release_hashref+ from an endpoint to verify that the server was deployed. This
-endpoint supports both JSON and plaintext output. To add this to a Rails
-application, simply mount it in +config/routes.rb+:
+cartage-rack provides a generator method that instantiates a Rack application
+that reports on release metadata, which will assist in verifying application
+deploys.
+
+To add the default generator to a Rails application, simply mount it in
++config/routes.rb+:
 
     require 'cartage/rack'
 
     Rails.application.routes.draw do
-      get '/release' => Cartage::Rack.mount(Rails.root)
+      get '/release' => Cartage::Rack::Simple(Rails.root)
     end
 
-Or map it in a normal Rack application in +config.ru+:
+To map it in a normal Rack application in +config.ru+:
 
     require 'cartage/rack'
     map('/release') do
-      run Cartage::Rack.mount(Dir.pwd)
+      run Cartage::Rack::Simple(Dir.pwd)
     end
 
-It can then be queried easily:
+Once mounted, it can then be queried easily:
 
     % rails start
     % curl localhost:3000/release
     development: (git) main
-    % curl localhost:3000/release.json | jshon
+    % curl localhost:3000/release.json | jq .
     {
       "env" : "development",
       "release_hashref" : "(git) main"
     }
 
-If there is a +release_hashref+ file, the value returned will be from this
-file. There are two versions of +release_hashref+ files supported; the original
-format (Cartage 1.0 and 1.1) has one line (just the hashref of the release).
-The new format has two lines, the hashref of the release and the timestamp of
-the release.
+== \Metadata
 
-    % curl localhost:3000/release.json | jshon
+The core of cartage-rack is Cartage::Rack::Metadata, which collects data from
+<tt>release-metadata.json</tt>, +release_hashref+, or the runtime environment
+(if Cartage::Rack.require_metadata is +false+). You may instantiate the class
+yourself if you wish to have a different sort of report for the release.
+
+== \Metadata Reporters
+
+There are two \Rack applications provided in cartage-rack 2.0 to report on
+release metadata. \Metadata is pulled from <tt>release-metadata.json</tt>,
++release_hashref+, or the current environment (which allows Cartage::Rack
+verification in development).
+
+When reading +release_hashref+, the first line is the hashref of the release; a
+second line, if present, is the Cartage timestamp of the release (an integer
+value of the form +YYYYmmddHHMMSS+).
+
+If a metadata file (<tt>release-metadata.json</tt> or <tt>release_hashref</tt>)
+exists, it will be read on application creation and cached for the lifetime of
+the Rack application. cartage-rack may be configured to throw an exception if a
+metadata file cannot be found:
+
+   Cartage::Rack.require_metadata false
+
+All reporters support JSON and plain text formats.
+
+=== Cartage::Rack
+
+A full metadata reporter. This reporter may include information that is
+considered *private* (including the source repository URL), so it is only
+recommended for use on protected endpoints. The default report format is JSON.
+
+The data returned is what is recorded in <tt>release-metadata.json</tt>, plus
+the name of the environment.
+
     {
-      "env" : "production",
-      "release_hashref" : "134458c3e3c02dd7c1cac8d5d41d85ce1e4decab"
-      "timestamp" : "20150411001143"
+      "env": {
+        "name": "production",
+      },
+      "package": {
+        "name": "package-name",
+        "repo": {
+          "type": "git",
+          "url": "git:git@github.com/KineticCafe/cartage-rack.git"
+        },
+        hashref: "decafbad",
+        timestamp: "19851027024200"
+      }
     }
+
+Mount this reporter with <tt>Cartage::Rack(Rails.root)</tt>. The data may be
+filtered out by providing a block to <tt>Cartage::Rack()</tt> which modifies
+the +metadata+ in place.
+
+    Cartage::Rack(Rails.root) do |metadata|
+      unless Rails.env.development?
+        # Remove the repo data before returning
+        metadata[:package].delete(:repo)
+      end
+    end
+
+=== Cartage::Rack::Simple
+
+A simplified metadata reporter, including only the information that was
+provided in cartage-rack 1.x (the environment, the hashref, and optionally a
+timestamp). The default report format is plain text.
+
+Mount this reporter with <tt>Cartage::Rack::Simple(Rails.root)</tt>. For
+backwards compatibility, this reporter may also be mounted with
+<tt>Cartage::Rack.mount(Rails.root)</tt>. The Simple reporter does not support
+filtering.
 
 == Install
 
 Add cartage-rack to your Gemfile:
 
-    gem 'cartage-rack', '~> 1.1'
+    gem 'cartage-rack', '~> 2.0'
 
 Or manually install:
 
   % gem install cartage-rack
+
+cartage-rack should be in the main section of your Gemfile, unlike Cartage
+itself.
 
 == cartage-rack Semantic Versioning
 
@@ -79,6 +144,10 @@ change:
 cartage-rack will generally track cartage for major versions to ensure plugin API
 compatibility.
 
-:include: Contributing.rdoc
+== Community and Contributing
 
-:include: Licence.rdoc
+cartage-rack welcomes your contributions as described in
+{Contributing.md}[https://github.com/KineticCafe/cartage-rack/blob/master/Contributing.md].
+This project, like all Kinetic Cafe {open source
+projects}[https://github.com/KineticCafe], is under the Kinetic Cafe Open
+Source {Code of Conduct}[https://github.com/KineticCafe/code-of-conduct].

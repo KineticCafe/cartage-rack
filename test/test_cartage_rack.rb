@@ -1,130 +1,176 @@
-# -*- ruby encoding: utf-8 -*-
+# frozen_string_literal: true
 
 require 'minitest_config'
 
 describe Cartage::Rack do
   include Rack::Test::Methods
 
-  let(:app) { Cartage::Rack.mount(path) }
-  let(:path) { 'test/application' }
+  let(:app) { Cartage::Rack(path) }
+  let(:path) { 'test/hillvalley' }
+  let(:metadata) {
+    {
+      'package' => {
+        'name' => 'hillvalley',
+        'repo' => {
+          'type' => 'git',
+          'url' => 'git:doc@hillvalley.com/delorean.git'
+        },
+        'hashref' => 'd0cb1ff',
+        'timestamp' => '19851027104200'
+      }
+    }
+  }
 
-  it 'inspects nicely for `rake routes` in Rails' do
+  def around(&block)
     stub_dir_pwd path do
-      assert_equal 'Cartage::Rack for application', Cartage::Rack.mount.inspect
-    end
-  end
-
-  it 'returns text/plain content by default' do
-    instance_stub Cartage::Rack, :application_env, 'env' do
-      instance_stub Cartage::Rack, :release_hashref, 'ref' do
-        get '/'
-
-        assert_equal 'text/plain', last_response.header['Content-Type']
+      instance_stub Pathname, :exist?, true do
+        instance_stub Pathname, :read, -> { metadata.to_json } do
+          super(&block)
+        end
       end
     end
   end
 
-  it 'returns application/json content when requested' do
-    instance_stub Cartage::Rack, :application_env, 'env' do
-      instance_stub Cartage::Rack, :release_hashref, 'ref' do
-        get '/.json'
+  it 'inspects nicely for `rake routes` in Rails' do
+    assert_equal 'Cartage::Rack for hillvalley (release_metadata_json)',
+      Cartage::Rack().inspect
+  end
 
+  it 'returns application/json content by default' do
+    get '/'
+    assert_equal 'application/json', last_response.header['Content-Type']
+  end
+
+  it 'returns text/plain content when requested' do
+    get '/.txt'
+    assert_equal 'text/plain', last_response.header['Content-Type']
+  end
+
+  context 'application environment' do
+    it 'uses $RAILS_ENV first' do
+      stub_env 'RAILS_ENV' => 'vne_sliar', 'RACK_ENV' => 'vne_kcar' do
+        get '/'
+
+        metadata['env'] = { 'name' => 'vne_sliar' }
+
+        assert last_response.ok?
+        assert_equal metadata.to_json, last_response.body
+        assert_equal 'application/json', last_response.header['Content-Type']
+      end
+    end
+
+    it 'uses $RACK_ENV second' do
+      stub_env 'RAILS_ENV' => nil, 'RACK_ENV' => 'vne_kcar' do
+        get '/'
+
+        metadata['env'] = { 'name' => 'vne_kcar' }
+
+        assert last_response.ok?
+        assert_equal metadata.to_json, last_response.body
+        assert_equal 'application/json', last_response.header['Content-Type']
+      end
+    end
+
+    it 'falls through to UNKNOWN without either $RAILS_ENV or $RACK_ENV' do
+      stub_env 'RAILS_ENV' => nil, 'RACK_ENV' => nil do
+        get '/'
+
+        metadata['env'] = { 'name' => 'UNKNOWN' }
+
+        assert last_response.ok?
+        assert_equal metadata.to_json, last_response.body
         assert_equal 'application/json', last_response.header['Content-Type']
       end
     end
   end
 
-  describe 'application_env' do
-    it 'uses RAILS_ENV first' do
-      instance_stub Cartage::Rack, :release_hashref, 'release_hashref' do
-        stub_env({ 'RAILS_ENV' => 'vne_sliar', 'RACK_ENV' => 'vne_kcar' }) do
-          get '/'
-
-          assert last_response.ok?
-          assert_equal 'vne_sliar: release_hashref', last_response.body
-          assert_equal 'text/plain', last_response.header['Content-Type']
-        end
-      end
+  context 'timestamp' do
+    around do |&block|
+      metadata['package'].delete('timestamp')
+      super(&block)
     end
 
-    it 'uses RACK_ENV second' do
-      instance_stub Cartage::Rack, :release_hashref, 'release_hashref' do
-        stub_env({ 'RACK_ENV' => 'vne_kcar' }) do
-          get '/'
+    it 'is omitted if not present in the metadata' do
+      stub_env 'RAILS_ENV' => nil, 'RACK_ENV' => nil do
+        get '/'
 
-          assert last_response.ok?
-          assert_equal 'vne_kcar: release_hashref', last_response.body
-          assert_equal 'text/plain', last_response.header['Content-Type']
-        end
-      end
-    end
+        metadata['env'] = { 'name' => 'UNKNOWN' }
 
-    it 'uses RACK_ENV second' do
-      instance_stub Cartage::Rack, :release_hashref, 'release_hashref' do
-        stub_env({}) do
-          get '/'
-
-          assert last_response.ok?
-          assert_equal 'UNKNOWN: release_hashref', last_response.body
-          assert_equal 'text/plain', last_response.header['Content-Type']
-        end
+        assert last_response.ok?
+        assert_equal metadata.to_json, last_response.body
+        assert_equal 'application/json', last_response.header['Content-Type']
       end
     end
   end
 
-  describe 'release_hashref' do
-    it 'looks for ./release_hashref' do
-      stub_env({ 'RAILS_ENV' => 'x' }) do
-        instance_stub Pathname, :exist?, true do
-          instance_stub Pathname, :read, "file-contents\n" do
-            get '/'
+  context 'text/plain' do
+    it 'returns a useful plaintext format' do
+      stub_env 'RAILS_ENV' => 'production' do
+        get '/.text'
 
-            assert last_response.ok?
-            assert_equal 'x: file-contents', last_response.body
-          end
-        end
+        assert last_response.ok?
+        assert_equal <<-text.chomp, last_response.body
+name: hillvalley
+environment: production
+hashref: d0cb1ff
+timestamp: 19851027104200
+git: git:doc@hillvalley.com/delorean.git
+        text
+        assert_equal 'text/plain', last_response.header['Content-Type']
       end
     end
 
-    it 'looks for ./release_hashref (multi-line)' do
-      stub_env({ 'RAILS_ENV' => 'x' }) do
-        instance_stub Pathname, :exist?, true do
-          instance_stub Pathname, :read, "file-contents\ntimestamp\n" do
-            get '/'
+    it 'skips the repo if package.repo is missing' do
+      stub_env 'RAILS_ENV' => 'production' do
+        metadata['package'].delete('repo')
 
-            assert last_response.ok?
-            assert_equal 'x: file-contents (timestamp)', last_response.body
-          end
-        end
+        get '/.text'
+
+        assert last_response.ok?
+        assert_equal <<-text.chomp, last_response.body
+name: hillvalley
+environment: production
+hashref: d0cb1ff
+timestamp: 19851027104200
+        text
+        assert_equal 'text/plain', last_response.header['Content-Type']
       end
     end
 
-    it 'looks for .git next' do
-      stub_env({ 'RAILS_ENV' => 'x' }) do
-        instance_stub Pathname, :exist?, false do
-          instance_stub Pathname, :directory?, true do
-            stub_backticks 'HEAD' do
-              get '/'
+    it 'skips the timestamp if package.timestamp is missing' do
+      stub_env 'RAILS_ENV' => 'production' do
+        metadata['package'].delete('timestamp')
 
-              assert last_response.ok?
-              assert_equal 'x: (git) HEAD', last_response.body
-            end
-          end
-        end
+        get '/.text'
+
+        assert last_response.ok?
+        assert_equal <<-text.chomp, last_response.body
+name: hillvalley
+environment: production
+hashref: d0cb1ff
+git: git:doc@hillvalley.com/delorean.git
+        text
+        assert_equal 'text/plain', last_response.header['Content-Type']
       end
     end
+  end
 
-    it 'defaults to a string value' do
-      stub_env({ 'RAILS_ENV' => 'x' }) do
-        instance_stub Pathname, :exist?, false do
-          instance_stub Pathname, :directory?, false do
-            get '/'
+  context 'filter' do
+    let(:app) {
+      Cartage::Rack(path) { |content|
+        content['env']['name'] = content['env']['name'].reverse
+      }
+    }
 
-            assert last_response.ok?
-            assert_equal 'x: UNKNOWN - no release_hashref or .git directory',
-              last_response.body
-          end
-        end
+    it 'applies the filter before returning' do
+      stub_env 'RAILS_ENV' => 'vne_sliar' do
+        get '/'
+
+        metadata['env'] = { 'name' => 'rails_env' }
+
+        assert last_response.ok?
+        assert_equal metadata.to_json, last_response.body
+        assert_equal 'application/json', last_response.header['Content-Type']
       end
     end
   end
