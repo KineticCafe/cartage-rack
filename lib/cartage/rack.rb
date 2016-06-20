@@ -32,7 +32,8 @@ class Cartage
       private
 
       def default_require_metadata
-        (ENV['RAILS_ENV'] || ENV['RACK_ENV']).to_s !~ /\A(?:development|test)\z/i
+        environment = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
+        environment !~ /\A(?:development|test)\z/i
       end
     end
 
