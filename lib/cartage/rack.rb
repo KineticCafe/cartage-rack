@@ -15,7 +15,7 @@ class Cartage
   # +application/json+ value, or as a +text/plain+ string if called with
   # +.text+ or +.txt+.
   class Rack
-    VERSION = '2.0' #:nodoc:
+    VERSION = '2.1' #:nodoc:
 
     class << self
       # When +true+, Cartage::Rack and Cartage::Rack::Simple will raise an
