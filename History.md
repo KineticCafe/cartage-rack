@@ -1,4 +1,9 @@
-### 2.0 / 2016-05-DD
+### 2.1 / 2016-06-28
+
+*   Fix default env issue where ENV['RAILS_ENV'] nor ENV['RACK_ENV'] is set
+    by adding default string.
+
+### 2.0 / 2016-05-31
 
 *   Rewrote for compatibility with cartage 2.0.
 

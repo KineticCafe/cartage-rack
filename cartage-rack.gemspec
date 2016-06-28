@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
-# stub: cartage-rack 2.0 ruby lib
+# stub: cartage-rack 2.1 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "cartage-rack".freeze
-  s.version = "2.0"
+  s.version = "2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["Austin Ziegler".freeze]
-  s.date = "2016-05-31"
+  s.date = "2016-06-28"
   s.description = "cartage-rack is a plug-in for {cartage}[https://github.com/KineticCafe/cartage]\nto provide a Rack application that reports on release metadata.\n\nCartage provides a repeatable means to create a package for a Rails application\nthat can be used in deployment with a configuration tool like Ansible, Chef,\nPuppet, or Salt. The package is created with its dependencies bundled in\n+vendor/bundle+, so it can be deployed in environments with strict access\ncontrol rules and without requiring development tool access.".freeze
   s.email = ["aziegler@kineticcafe.com".freeze]
   s.extra_rdoc_files = ["Contributing.md".freeze, "History.md".freeze, "Licence.md".freeze, "Manifest.txt".freeze, "README.rdoc".freeze]
