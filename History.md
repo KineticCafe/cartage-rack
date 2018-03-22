@@ -1,3 +1,7 @@
+### 2.2 / 2018-03-23
+
+*   Add support for ENV['APP_ENV'] per Sinatra documentation recommendations.
+
 ### 2.1 / 2016-06-28
 
 *   Fix default env issue where ENV['RAILS_ENV'] nor ENV['RACK_ENV'] is set

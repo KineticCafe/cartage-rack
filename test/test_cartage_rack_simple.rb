@@ -57,7 +57,9 @@ describe Cartage::Rack::Simple do
 
   context 'application environment' do
     it 'uses $RAILS_ENV first' do
-      stub_env 'RAILS_ENV' => 'vne_sliar', 'RACK_ENV' => 'vne_kcar' do
+      stub_env 'RAILS_ENV' => 'vne_sliar',
+               'APP_ENV'   => 'vne_ppa',
+               'RACK_ENV'  => 'vne_kcar' do
         get '/'
 
         assert last_response.ok?
@@ -66,8 +68,18 @@ describe Cartage::Rack::Simple do
       end
     end
 
-    it 'uses $RACK_ENV second' do
-      stub_env 'RAILS_ENV' => nil, 'RACK_ENV' => 'vne_kcar' do
+    it 'uses $APP_ENV second' do
+      stub_env 'RAILS_ENV' => nil, 'APP_ENV' => 'vne_ppa', 'RACK_ENV' => 'vne_kcar' do
+        get '/'
+
+        assert last_response.ok?
+        assert_equal 'vne_ppa: d0cb1ff (19851027104200)', last_response.body
+        assert_equal 'text/plain', last_response.header['Content-Type']
+      end
+    end
+
+    it 'uses $RACK_ENV third' do
+      stub_env 'RAILS_ENV' => nil, 'APP_ENV' => nil, 'RACK_ENV' => 'vne_kcar' do
         get '/'
 
         assert last_response.ok?
@@ -76,8 +88,8 @@ describe Cartage::Rack::Simple do
       end
     end
 
-    it 'falls through to UNKNOWN without either $RAILS_ENV or $RACK_ENV' do
-      stub_env 'RAILS_ENV' => nil, 'RACK_ENV' => nil do
+    it 'falls through to UNKNOWN without either $RAILS_ENV, $APP_ENV or $RACK_ENV' do
+      stub_env 'RAILS_ENV' => nil, 'APP_ENV' => nil, 'RACK_ENV' => nil do
         get '/'
 
         assert last_response.ok?
