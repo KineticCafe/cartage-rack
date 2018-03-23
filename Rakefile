@@ -54,16 +54,15 @@ module Hoe::Publish #:nodoc:
   end
 end
 
-namespace :test do
-  if File.exist?('.simplecov-prelude.rb')
+if File.exist?('.simplecov-prelude.rb')
+  namespace :test do
     task :coverage do
       spec.test_prelude = 'load ".simplecov-prelude.rb"'
-
       Rake::Task['test'].execute
     end
-  end
 
-  CLOBBER << 'coverage'
+    CLOBBER << 'coverage'
+  end
 end
 
 CLOBBER << 'tmp'
