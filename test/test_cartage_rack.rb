@@ -48,7 +48,9 @@ describe Cartage::Rack do
 
   context 'application environment' do
     it 'uses $RAILS_ENV first' do
-      stub_env 'RAILS_ENV' => 'vne_sliar', 'RACK_ENV' => 'vne_kcar' do
+      stub_env 'RAILS_ENV' => 'vne_sliar',
+               'APP_ENV'   => 'vne_ppa',
+               'RACK_ENV'  => 'vne_kcar' do
         get '/'
 
         metadata['env'] = { 'name' => 'vne_sliar' }
@@ -59,8 +61,20 @@ describe Cartage::Rack do
       end
     end
 
-    it 'uses $RACK_ENV second' do
-      stub_env 'RAILS_ENV' => nil, 'RACK_ENV' => 'vne_kcar' do
+    it 'uses $APP_ENV second' do
+      stub_env 'RAILS_ENV' => nil, 'APP_ENV' => 'vne_ppa', 'RACK_ENV' => 'vne_kcar' do
+        get '/'
+
+        metadata['env'] = { 'name' => 'vne_ppa' }
+
+        assert last_response.ok?
+        assert_equal metadata.to_json, last_response.body
+        assert_equal 'application/json', last_response.header['Content-Type']
+      end
+    end
+
+    it 'uses $RACK_ENV third' do
+      stub_env 'RAILS_ENV' => nil, 'APP_ENV' => nil, 'RACK_ENV' => 'vne_kcar' do
         get '/'
 
         metadata['env'] = { 'name' => 'vne_kcar' }
@@ -71,8 +85,8 @@ describe Cartage::Rack do
       end
     end
 
-    it 'falls through to UNKNOWN without either $RAILS_ENV or $RACK_ENV' do
-      stub_env 'RAILS_ENV' => nil, 'RACK_ENV' => nil do
+    it 'falls through to UNKNOWN without either $RAILS_ENV, $APP_ENV or $RACK_ENV' do
+      stub_env 'RAILS_ENV' => nil, 'APP_ENV' => nil, 'RACK_ENV' => nil do
         get '/'
 
         metadata['env'] = { 'name' => 'UNKNOWN' }

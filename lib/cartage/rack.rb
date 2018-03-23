@@ -15,7 +15,7 @@ class Cartage
   # +application/json+ value, or as a +text/plain+ string if called with
   # +.text+ or +.txt+.
   class Rack
-    VERSION = '2.1' #:nodoc:
+    VERSION = '2.2' #:nodoc:
 
     class << self
       # When +true+, Cartage::Rack and Cartage::Rack::Simple will raise an
@@ -23,7 +23,7 @@ class Cartage
       # +release_hashref+). May be explicitly turned off.
       #
       # Defaults to +true+ except in development or test environments (based on
-      # <tt>$RAILS_ENV</tt> and <tt>$RACK_ENV</tt>).
+      # <tt>$RAILS_ENV</tt>, <tt>$APP_ENV</tt> and <tt>$RACK_ENV</tt>).
       def require_metadata(value = (arg = false; nil)) # rubocop:disable Style/Semicolon
         @require_metadata = value unless arg == false
         @require_metadata || default_require_metadata
@@ -32,7 +32,7 @@ class Cartage
       private
 
       def default_require_metadata
-        environment = ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
+        environment = ENV['RAILS_ENV'] || ENV['APP_ENV'] || ENV['RACK_ENV'] || 'development'
         environment !~ /\A(?:development|test)\z/i
       end
     end

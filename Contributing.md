@@ -59,6 +59,7 @@ Here's the most direct way to get your work merged into the project:
 ### Contributors
 
 *   Austin Ziegler created cartage-rack.
+*   Jesse Mignac added support for `$APP_ENV`.
 
 [Minitest]: https://github.com/seattlerb/minitest
 [quality commit messages]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html

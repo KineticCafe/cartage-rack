@@ -53,7 +53,7 @@ class Cartage::Rack::Metadata
 
   def application_env
     @application_env ||= {
-      'env' => { 'name' => ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'UNKNOWN' }
+      'env' => { 'name' => ENV['RAILS_ENV'] || ENV['APP_ENV'] || ENV['RACK_ENV'] || 'UNKNOWN' }
     }
   end
 
