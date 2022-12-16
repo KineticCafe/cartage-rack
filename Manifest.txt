@@ -7,7 +7,7 @@ Rakefile
 lib/cartage/rack.rb
 lib/cartage/rack/metadata.rb
 lib/cartage/rack/simple.rb
-test/minitest_config.rb
+test/minitest_helper.rb
 test/test_cartage_rack.rb
 test/test_cartage_rack_metadata.rb
 test/test_cartage_rack_simple.rb

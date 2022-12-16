@@ -6,14 +6,19 @@ continuous integration :: {<img src="https://travis-ci.org/KineticCafe/cartage-r
 
 == Description
 
-cartage-rack is a plug-in for {cartage}[https://github.com/KineticCafe/cartage]
-to provide a Rack application that reports on release metadata.
+This release is the *last* version of cartage-rack. It will be replaced with
+a different tool in the future, but this release will allow installation in
+modern Ruby versions.
 
-Cartage provides a repeatable means to create a package for a Rails application
-that can be used in deployment with a configuration tool like Ansible, Chef,
-Puppet, or Salt. The package is created with its dependencies bundled in
-+vendor/bundle+, so it can be deployed in environments with strict access
-control rules and without requiring development tool access.
+cartage-rack is a plug-in for
+{cartage}[https://github.com/KineticCafe/cartage] to provide a Rack
+application that reports on release metadata.
+
+Cartage provides a repeatable means to create a package for a Rails
+application that can be used in deployment with a configuration tool like
+Ansible, Chef, Puppet, or Salt. The package is created with its dependencies
+bundled in +vendor/bundle+, so it can be deployed in environments with strict
+access control rules and without requiring development tool access.
 
 == Synopsis
 
