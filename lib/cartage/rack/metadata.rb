@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'pathname'
-require 'json'
+require "pathname"
+require "json"
 
 ##
 # A representation for Cartage metadata for use with Cartage::Rack and
 # Cartage::Rack::Simple.
 class Cartage::Rack::Metadata
-  METADATA_CLEANER = ->(_, v) { #:nodoc:
-    v.delete_if(&METADATA_CLEANER) if v.kind_of?(Hash)
+  METADATA_CLEANER = ->(_, v) { # :nodoc:
+    v.delete_if(&METADATA_CLEANER) if v.is_a?(Hash)
     v.nil? || (v.respond_to?(:empty?) && v.empty?)
   }
   private_constant :METADATA_CLEANER
@@ -31,7 +31,7 @@ class Cartage::Rack::Metadata
     @filter = filter
     @content = read_release_metadata_json || read_release_hashref
 
-    fail 'Cannot find release-metadata.json or release_hashref' if required && !@content
+    fail "Cannot find release-metadata.json or release_hashref" if required && !@content
 
     @source ||= :live
   end
@@ -41,11 +41,11 @@ class Cartage::Rack::Metadata
   # content data.
   def resolve
     content.merge(application_env).tap do |data|
-      @filter.call(data) if @filter
+      @filter&.call(data)
     end.delete_if(&METADATA_CLEANER)
   end
 
-  def inspect #:nodoc:
+  def inspect # :nodoc:
     "#{@root_path.expand_path.basename} (#{@source})"
   end
 
@@ -53,7 +53,7 @@ class Cartage::Rack::Metadata
 
   def application_env
     @application_env ||= {
-      'env' => { 'name' => ENV['RAILS_ENV'] || ENV['APP_ENV'] || ENV['RACK_ENV'] || 'UNKNOWN' }
+      "env" => {"name" => ENV["RAILS_ENV"] || ENV["APP_ENV"] || ENV["RACK_ENV"] || "UNKNOWN"}
     }
   end
 
@@ -61,24 +61,24 @@ class Cartage::Rack::Metadata
     return @content if @content
 
     {
-      'package' => {}
+      "package" => {}
     }.tap do |result|
-      package = result['package']
-      package['name'] = @root_path.basename.to_s
-      package['hashref'] = release_hashref
-      package['timestamp'] = Time.now.utc.strftime('%Y%m%d%H%M%S')
+      package = result["package"]
+      package["name"] = @root_path.basename.to_s
+      package["hashref"] = release_hashref
+      package["timestamp"] = Time.now.utc.strftime("%Y%m%d%H%M%S")
 
       if repo?
-        package['repo'] = {
-          'type' => 'git', # Hardcoded until we have other support
-          'url' => repo_url
+        package["repo"] = {
+          "type" => "git", # Hardcoded until we have other support
+          "url" => repo_url
         }
       end
     end
   end
 
   def read_release_metadata_json
-    file = @root_path.join('release-metadata.json')
+    file = @root_path.join("release-metadata.json")
 
     return unless file.exist?
 
@@ -87,7 +87,7 @@ class Cartage::Rack::Metadata
   end
 
   def read_release_hashref
-    file = @root_path.join('release_hashref')
+    file = @root_path.join("release_hashref")
 
     return unless file.exist?
 
@@ -96,10 +96,10 @@ class Cartage::Rack::Metadata
     hashref, timestamp, = file.read.split($/)
 
     {
-      'package' => {
-        'name' => @root_path.basename.to_s,
-        'hashref' => hashref,
-        'timestamp' => timestamp
+      "package" => {
+        "name" => @root_path.basename.to_s,
+        "hashref" => hashref,
+        "timestamp" => timestamp
       }
     }.delete_if(&METADATA_CLEANER)
   end
@@ -107,22 +107,22 @@ class Cartage::Rack::Metadata
   def repo_url
     return unless repo?
     unless defined?(@repo_url)
-      @repo_url = %x(git remote show -n origin).
-        match(/\n\s+Fetch URL: (?<fetch>[^\n]+)/)[:fetch]
+      @repo_url = `git remote show -n origin`
+        .match(/\n\s+Fetch URL: (?<fetch>[^\n]+)/)[:fetch]
     end
     @repo_url
   end
 
   def release_hashref
     if repo?
-      "(git) #{%x(git rev-parse --abbrev-ref HEAD).chomp}"
+      "(git) #{`git rev-parse --abbrev-ref HEAD`.chomp}"
     else
-      'UNKNOWN - no .git directory'
+      "UNKNOWN - no .git directory"
     end
   end
 
   def repo?
-    @is_repo = @root_path.join('.git').directory? unless defined?(@is_repo)
+    @is_repo = @root_path.join(".git").directory? unless defined?(@is_repo)
     @is_repo
   end
 end

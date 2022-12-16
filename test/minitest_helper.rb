@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
-gem 'minitest'
-require 'rack/test'
-require 'minitest/autorun'
-require 'minitest/pretty_diff'
-require 'minitest/focus'
-require 'minitest/moar'
-require 'minitest/bisect'
-require 'minitest/hooks/default'
-require 'timecop'
+gem "minitest"
+
+require "minitest/autorun"
+require "minitest/hooks/default"
+require "minitest/moar"
+require "rack/test"
+require "timecop"
 
 Timecop.safe_mode = true
 
-require 'cartage/rack'
+require "cartage/rack"
 
 module Minitest::CartageRackStubs
   def stub_dir_pwd value, *block_args, &block
@@ -24,8 +22,6 @@ module Minitest::CartageRackStubs
       env.fetch(key) { |k|
         if options[:passthrough]
           ENV.send(:"__minitest_stub__[]", k)
-        else
-          nil
         end
       }
     }
@@ -74,9 +70,4 @@ module Minitest::CartageRackStubs
   end
 
   Minitest::Test.send(:include, self)
-end
-
-class << Minitest::Spec
-  alias context describe
-  private :context
 end
