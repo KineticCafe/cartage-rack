@@ -6,9 +6,9 @@ class Cartage::Rack
     # Creates a new instance of the Cartage::Rack::Simple application to the
     # specified +root_path+, or +Dir.pwd+. This method has been deprecated.
     def mount(root_path = nil)
-      warn <<-warning
-Cartage::Rack.mount(path) is deprecated; use Cartage::Rack::Simple(path) instead.
-      warning
+      warn <<~WARNING
+        Cartage::Rack.mount(path) is deprecated; use Cartage::Rack::Simple(path) instead.
+      WARNING
       Simple(root_path)
     end
 
@@ -36,21 +36,21 @@ Cartage::Rack.mount(path) is deprecated; use Cartage::Rack::Simple(path) instead
 
       content = {}
 
-      content[:env] = dig(full_content, 'env', 'name')
-      content[:release_hashref] = dig(full_content, 'package', 'hashref')
-      content[:timestamp] = dig(full_content, 'package', 'timestamp')
+      content[:env] = dig(full_content, "env", "name")
+      content[:release_hashref] = dig(full_content, "package", "hashref")
+      content[:timestamp] = dig(full_content, "package", "timestamp")
 
-      case env['PATH_INFO']
+      case env["PATH_INFO"]
       when /\.json\z/
-        type = 'application/json'
+        type = "application/json"
         body = content.to_json
       else
-        type = 'text/plain'
+        type = "text/plain"
         body = "#{content[:env]}: #{content[:release_hashref]}"
         body += " (#{content[:timestamp]})" if content[:timestamp]
       end
 
-      [ type, body ]
+      [type, body]
     end
   end
 end

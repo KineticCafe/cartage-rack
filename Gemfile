@@ -3,12 +3,14 @@
 # NOTE: This file is not the canonical source of dependencies. Edit the
 # Rakefile, instead.
 
-source 'https://rubygems.org/'
+source "https://rubygems.org/"
 
 # Specify your gem's dependencies in cartage-rack.gemspec
 gemspec
 
-group :local_development, :test do
-  gem 'byebug', platforms: :mri
-  gem 'pry'
-end if ENV['LOCAL_DEV']
+if ENV["LOCAL_DEV"]
+  group :local_development, :test do
+    gem "byebug", platforms: :mri
+    gem "pry"
+  end
+end

@@ -1,10 +1,6 @@
-*.swp
-*~
 .bundle/
 .byebug_history
 .rake_tasks~
-.source_index
-.vagrant
 Gemfile.lock
 gemfiles/*.lock
 coverage/

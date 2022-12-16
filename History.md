@@ -1,55 +1,81 @@
-### 2.2 / 2018-03-23
+# Change History
 
-*   Add support for ENV['APP_ENV'] per Sinatra documentation recommendations.
+## 2.3 / 2022-12-16
 
-### 2.1 / 2016-06-28
+This is primarily a (mostly-mechanical) modernization of the codebase,
+bringing it up to Kinetic Commerce 2022 standards.
 
-*   Fix default env issue where ENV['RAILS_ENV'] nor ENV['RACK_ENV'] is set
-    by adding default string.
+- Remove dead development files: `.autotest`, `.gemtest`, `.minitest.rb`,
+  `.rubocop.yml`, `.simplecov-prelude.rb`, `.travis.yml`
 
-### 2.0 / 2016-05-31
+- Add new development files: `.github/workflows/ruby.yml`, `.rdoc_options`,
+  `.standard.yml`, `Appraisals`, `gemfiles/*.gemfile`
 
-*   Rewrote for compatibility with cartage 2.0.
+- Clean up configuration: `.gitignore`, `.hoerc`, `Rakefile`
 
-    *   Renamed Cartage::Rack to Cartage::Rack::Simple and created a *new*
-        Cartage::Rack that returns more information.
+- Updated generated files: `Manifest.txt`, `cartage-rack.gemspec`
 
-    *   Extracted metadata gathering out of Cartage::Rack and into
-        Cartage::Rack::Metadata.
+- Renamed `test/minitest_config.rb` to `test/minitest_helper.rb` to reflect
+  consistent naming.
 
-    *   Deprecated Cartage::Rack.mount in favour of Cartage::Rack() and
-        Cartage::Rack::Simple() methods.
+- Removed `context` alias for `describe`.
 
-*   1 governance change
+- Apply formatting from `standardrb` after dropping raw rubocop.
 
-    *   cartage-rack is now under the Kinetic Cafe Open Source [Code of
-        Conduct][kccoc].
+- Sunset cartage-rack as of this version.
 
-### 1.1 / 2015-04-11
+## 2.2 / 2018-03-23
 
-*   2 minor enhancements
+- Add support for ENV['APP_ENV'] per Sinatra documentation recommendations.
 
-    *   Implemented Cartage::Rack#inspect to prevent `rake routes` from
-        presenting badly.
+## 2.1 / 2016-06-28
 
-    *   Preparing for a future Cartage change to the contents of the
-        `release_hashref` file. The future `release_hashref` will be two lines:
+- Fix default env issue where ENV['RAILS_ENV'] nor ENV['RACK_ENV'] is set
+  by adding default string.
 
-            hashref
-            timestamp
+## 2.0 / 2016-05-31
 
-        If `release_hashref` has two lines, the timestamp will be included in
-        the response. A timestamp will not be included if there is no
-        `release_hashref` file.
+- Rewrote for compatibility with cartage 2.0.
 
-*   1 development change
+  - Renamed Cartage::Rack to Cartage::Rack::Simple and created a _new_
+    Cartage::Rack that returns more information.
 
-    *   Implemented tests for Cartage::Rack.
+  - Extracted metadata gathering out of Cartage::Rack and into
+    Cartage::Rack::Metadata.
 
-### 1.0 / 2015-03-20
+  - Deprecated Cartage::Rack.mount in favour of Cartage::Rack() and
+    Cartage::Rack::Simple() methods.
 
-*   1 major enhancement
+- 1 governance change
 
-    *   Birthday!
+  - cartage-rack is now under the Kinetic Cafe Open Source [Code of
+    Conduct][kccoc].
+
+## 1.1 / 2015-04-11
+
+- 2 minor enhancements
+
+  - Implemented Cartage::Rack#inspect to prevent `rake routes` from
+    presenting badly.
+
+  - Preparing for a future Cartage change to the contents of the
+    `release_hashref` file. The future `release_hashref` will be two lines:
+
+        hashref
+        timestamp
+
+    If `release_hashref` has two lines, the timestamp will be included in
+    the response. A timestamp will not be included if there is no
+    `release_hashref` file.
+
+- 1 development change
+
+  - Implemented tests for Cartage::Rack.
+
+## 1.0 / 2015-03-20
+
+- 1 major enhancement
+
+  - Birthday!
 
 [kccoc]: https://github.com/KineticCafe/code-of-conduct
